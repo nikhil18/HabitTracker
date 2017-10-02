@@ -10,8 +10,6 @@ import com.example.android.habittracker.data.HabitContract.HabitEntry;
 
 public class HabitDbHelper extends SQLiteOpenHelper {
 
-    private HabitDbHelper mDbHelper;
-
     public static final String COMMA_SEP = ", ";
 
 
@@ -19,7 +17,7 @@ public class HabitDbHelper extends SQLiteOpenHelper {
             + HabitEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + HabitEntry.COLUMN_HABIT_DATE + " TEXT NOT NULL" + COMMA_SEP
             + HabitEntry.COLUMN_HABIT_YOGA + " INTEGER NOT NULL DEFAULT 0" + COMMA_SEP
-            + HabitEntry.COLUMN_HABIT_MEDICATION + " INTEGER NOT NULL DEFAULT 0"
+            + HabitEntry.COLUMN_HABIT_MEDICATION + " INTEGER NOT NULL DEFAULT 0" + COMMA_SEP
             + HabitEntry.COLUMN_HABIT_WALK + " INTEGER NOT NULL DEFAULT 0" + ")";
 
     private static final String SQL_DELETE_ENTRIES =
@@ -34,6 +32,7 @@ public class HabitDbHelper extends SQLiteOpenHelper {
     }
 
     public void onCreate(SQLiteDatabase db) {
+        System.out.println("Create table " + SQL_CREATE_ENTRIES);
         db.execSQL(SQL_CREATE_ENTRIES);
     }
 
@@ -41,19 +40,15 @@ public class HabitDbHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_DELETE_ENTRIES);
     }
 
-    public void insertHabit(int date, int yoga, int medication, int walk) {
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(HabitEntry.COLUMN_HABIT_DATE, date);
-        values.put(HabitEntry.COLUMN_HABIT_YOGA, yoga);
-        values.put(HabitEntry.COLUMN_HABIT_MEDICATION, medication);
-        values.put(HabitEntry.COLUMN_HABIT_WALK, walk);
-        db.insert(HabitEntry.TABLE_NAME, null, values);
+    public void insertHabit(ContentValues values) {
+        SQLiteDatabase db = getWritableDatabase();
+            db.insert(HabitEntry.TABLE_NAME, null, values);
+        db.close();
 
     }
 
     public Cursor readHabits() {
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
         String[] projection = {
                 HabitEntry._ID,
                 HabitEntry.COLUMN_HABIT_DATE,
